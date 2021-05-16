@@ -1,0 +1,199 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Тест_по_теории_вероятности
+{
+    public partial class Test : Form
+    {
+        int question_count;//Счетчик вопросов
+        int correct_answers;//Количество правильных ответов
+        int wrong_answers;//Количество неправильных
+
+        string[] array; //Массив данных
+
+        int correct_answers_number; //номер правильного ответа
+
+        int selected_response; //Номер выбранного ответа
+
+        StreamReader Reader; // Считывание из файла
+
+
+
+        public Test()
+        {
+            InitializeComponent();
+        }
+
+
+        void Start()
+        {
+            var Encoding = System.Text.Encoding.GetEncoding(65001); //Подключаем Кириллицу
+
+            try
+            {
+                Reader = new StreamReader(Directory.GetCurrentDirectory() + @"\test.txt",Encoding); //Обращаемся к нашему файлу с вопросами
+
+                this.Text = Reader.ReadLine();//Считываем название теста
+
+                question_count = 0;
+                correct_answers = 0;
+                wrong_answers = 0;
+
+                array = new string[10]; //Создали массив для 10 вопросов
+
+
+            }
+
+            catch(Exception)
+            {
+                MessageBox.Show("Ошибка текстового файла");
+            }
+
+            Quest();
+        }
+
+        //Смена вопроса
+        void Quest()
+        {
+            label1.Text = Reader.ReadLine();
+
+            //Варианты ответа
+            radioButton1.Text = Reader.ReadLine();
+            radioButton2.Text = Reader.ReadLine();
+            radioButton3.Text = Reader.ReadLine();
+
+            correct_answers_number = int.Parse(Reader.ReadLine()); // Считали правильный ответ
+
+            radioButton1.Checked = false;
+            radioButton2.Checked = false;
+            radioButton3.Checked = false;
+
+            button1.Enabled = false;
+            question_count++; //Увеличили число вопросов
+
+            if (Reader.EndOfStream == true)
+                button1.Text = "Завершить";
+
+
+
+        }
+
+        void Состояние_переключения(object sender, EventArgs e)
+        {
+            button1.Enabled = true;
+            button1.Focus(); // Корректное переключение
+            RadioButton p = (RadioButton)sender; //Проверяем процесс переключения
+            var t = p.Name;
+
+            selected_response = int.Parse(t.Substring(11));
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(selected_response == correct_answers_number)
+            {
+                correct_answers++;
+            }
+
+            else
+            {
+                wrong_answers++;
+
+                array[wrong_answers] = label1.Text;
+            }
+
+            if (button1.Text == "Начать заново")
+            {
+                button1.Text = "Следующий вопрос";
+
+                radioButton1.Visible = true;
+                radioButton2.Visible = true;
+                radioButton3.Visible = true;
+                Start();
+                return;
+            }
+
+            if(button1.Text == "Завершить")
+            {
+                Reader.Close();
+
+                radioButton1.Visible = false;
+                radioButton2.Visible = false;
+                radioButton3.Visible = false;
+
+                label1.Text = string.Format("Тестирование завершено.\n" +
+                    "Правильных ответов : {0} из {1}.\n" +
+                    "Набранные баллы: {2:F2}.", correct_answers, question_count, (correct_answers * 5.0F) / question_count);
+
+                button1.Text = "Начать тест заново";
+
+                var Str = "error : \n\n";
+
+                for (int i = 1; i <= wrong_answers; i++)
+                    Str += array[i] + "\n";
+
+                if(wrong_answers != 0)
+                {
+                    MessageBox.Show(Str,"Тест завершен");
+                }
+
+                if(button1.Text == "Следующий вопрос")
+                {
+                    Quest();
+                }
+            }
+
+   
+            
+        }
+
+        //Выход
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Test_Load(object sender, EventArgs e)
+        {
+            button1.Text = "Следующий вопрос";
+            button2.Text = "Выйти";
+
+            radioButton1.CheckedChanged += new EventHandler(Состояние_переключения);
+            radioButton2.CheckedChanged += new EventHandler(Состояние_переключения);
+            radioButton3.CheckedChanged += new EventHandler(Состояние_переключения);
+
+
+            Start();
+        }
+
+    }
+}
