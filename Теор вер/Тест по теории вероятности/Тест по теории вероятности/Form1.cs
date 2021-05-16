@@ -19,6 +19,7 @@ namespace Тест_по_теории_вероятности
         int correct_answers;//Количество правильных ответов
         int wrong_answers;//Количество неправильных
         int question_count_rand_ev;//Счетчик вопросов из 1й темы
+        int question_count_rand_iv;//Счетчик вопросов из 2й темы
         string[] array; //Массив данных
 
         int correct_answers_number; //номер правильного ответа
@@ -27,7 +28,8 @@ namespace Тест_по_теории_вероятности
         
         StreamReader Reader; // Считывание из файла
 
-        List <RandomEvents> random_events;//Список вопросов
+        List <RandomEvents> random_events;//Список вопросов по теме случайные события
+        List<RandomEvents> random_variables;//Список вопросов по теме случайные события
 
         public Test()
         {
@@ -78,10 +80,23 @@ namespace Тест_по_теории_вероятности
                     ans[i] = Reader.ReadLine();
                 int cor_ans = Convert.ToInt32(Reader.ReadLine());//Считываем правильный ответ
                 
-                random_events.Add(new RandomEvents(ex, ans, cor_ans));
+                random_events.Add(new RandomEvents(ex, ans, cor_ans));//Добавляем 
                 question_count_rand_ev++;
             }
             Reader.Close();
+            Reader = new StreamReader(Directory.GetCurrentDirectory() + @"\test2.txt", Encoding);//Открываем файл с темой Случайные события
+            random_variables = new List<RandomEvents>();
+            while (!Reader.EndOfStream)
+            {
+                string ex = Reader.ReadLine();//Считываем задание
+                string[] ans = new string[4];//Считываем массив ответов
+                for (int i = 0; i < ans.Length; i++)
+                    ans[i] = Reader.ReadLine();
+                int cor_ans = Convert.ToInt32(Reader.ReadLine());//Считываем правильный ответ
+
+                random_variables.Add(new RandomEvents(ex, ans, cor_ans));
+                question_count_rand_iv++;
+            }
         }
         //Смена вопроса
         void Quest()
