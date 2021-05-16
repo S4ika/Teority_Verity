@@ -69,7 +69,6 @@ namespace Тест_по_теории_вероятности
         {
             var Encoding = System.Text.Encoding.GetEncoding(65001); //Подключаем Кириллицу
             Reader = new StreamReader(Directory.GetCurrentDirectory() + @"\test.txt", Encoding); //Обращаемся к нашему файлу с вопросами
-            random_events = new List<RandomEvents>();
             while(!Reader.EndOfStream)
             {
                 string ex = Reader.ReadLine();//Считываем задание
@@ -100,7 +99,6 @@ namespace Тест_по_теории_вероятности
             correct_answers_number = random_events[numb_ques].CorrectAnswer; // Считали правильный ответ
 
             random_events.RemoveAt(numb_ques);
-            question_count_rand_ev--;
             radioButton1.Checked = false;
             radioButton2.Checked = false;
             radioButton3.Checked = false;
