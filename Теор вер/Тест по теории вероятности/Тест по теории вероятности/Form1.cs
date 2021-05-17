@@ -25,11 +25,11 @@ namespace Тест_по_теории_вероятности
         int correct_answers_number; //номер правильного ответа
 
         int selected_response; //Номер выбранного ответа
-        
+
         StreamReader Reader; // Считывание из файла
 
-        List <RandomEvents> random_events;//Список вопросов по теме случайные события
-        List<RandomEvents> random_variables;//Список вопросов по теме случайные события
+        List<RandomEvents> random_events;//Список вопросов по теме случайные события
+        List<RandomEvents> random_variables;//Список вопросов по теме случайные величины
 
         public Test()
         {
@@ -40,30 +40,19 @@ namespace Тест_по_теории_вероятности
         void Start()
         {
 
-
             question_count = 0;
             correct_answers = 0;
             wrong_answers = 0;
 
-            array = new string[10]; //Создали массив для 10 вопросов
+            array = new string[10]; //Создали массив для ошибок 
 
-            /*try
+            if (question_count_rand_ev < 3 || question_count_rand_iv < 3)
             {
-
-                question_count = 0;
-                correct_answers = 0;
-                wrong_answers = 0;
-
-                array = new string[10]; //Создали массив для 10 вопросов
-
-
+                MessageBox.Show("Нехватка вопросов");
+                this.Close();
             }
 
-            catch(Exception)
-            {
-                MessageBox.Show("Ошибка текстового файла");
-            }*/
-            AddQuestions();
+            
             Quest();
         }
 
@@ -72,14 +61,14 @@ namespace Тест_по_теории_вероятности
             var Encoding = System.Text.Encoding.GetEncoding(65001); //Подключаем Кириллицу
             Reader = new StreamReader(Directory.GetCurrentDirectory() + @"\test.txt", Encoding); //Обращаемся к нашему файлу с вопросами
             random_events = new List<RandomEvents>();
-            while(!Reader.EndOfStream)
+            while (!Reader.EndOfStream)
             {
                 string ex = Reader.ReadLine();//Считываем задание
                 string[] ans = new string[4];//Считываем массив ответов
-                for(int i = 0; i < ans.Length;i++)
+                for (int i = 0; i < ans.Length; i++)
                     ans[i] = Reader.ReadLine();
                 int cor_ans = Convert.ToInt32(Reader.ReadLine());//Считываем правильный ответ
-                
+
                 random_events.Add(new RandomEvents(ex, ans, cor_ans));//Добавляем 
                 question_count_rand_ev++;
             }
@@ -102,19 +91,40 @@ namespace Тест_по_теории_вероятности
         void Quest()
         {
             Random rnd = new Random();
-            int numb_ques = rnd.Next(0, question_count_rand_ev);
+            if (question_count < 3)
+            {
+                int numb_ques = rnd.Next(0, question_count_rand_ev);
 
-            label1.Text = random_events[numb_ques].Question;
+                label1.Text = (question_count+1) + ". " + random_events[numb_ques].Question;
 
-            //Варианты ответа
-            radioButton1.Text = random_events[numb_ques].Answers(0);
-            radioButton2.Text = random_events[numb_ques].Answers(1);
-            radioButton3.Text = random_events[numb_ques].Answers(2);
-            radioButton4.Text = random_events[numb_ques].Answers(3);
+                //Варианты ответа
+                radioButton1.Text = random_events[numb_ques].Answers(0);
+                radioButton2.Text = random_events[numb_ques].Answers(1);
+                radioButton3.Text = random_events[numb_ques].Answers(2);
+                radioButton4.Text = random_events[numb_ques].Answers(3);
 
-            correct_answers_number = random_events[numb_ques].CorrectAnswer; // Считали правильный ответ
+                correct_answers_number = random_events[numb_ques].CorrectAnswer; // Считали правильный ответ
 
-            random_events.RemoveAt(numb_ques);
+                random_events.RemoveAt(numb_ques);
+                question_count_rand_ev--;
+            }
+            else
+            {
+                int numb_ques = rnd.Next(0, question_count_rand_iv);
+
+                label1.Text = (question_count+1) + ". " + random_variables[numb_ques].Question;
+
+                //Варианты ответа
+                radioButton1.Text = random_variables[numb_ques].Answers(0);
+                radioButton2.Text = random_variables[numb_ques].Answers(1);
+                radioButton3.Text = random_variables[numb_ques].Answers(2);
+                radioButton4.Text = random_variables[numb_ques].Answers(3);
+
+                correct_answers_number = random_variables[numb_ques].CorrectAnswer; // Считали правильный ответ
+
+                random_variables.RemoveAt(numb_ques);//Удалили вопрос из списка, чтобы избежать повторения
+                question_count_rand_iv--;//Уменьшили количество вопросов по теме
+            }
             radioButton1.Checked = false;
             radioButton2.Checked = false;
             radioButton3.Checked = false;
@@ -123,7 +133,7 @@ namespace Тест_по_теории_вероятности
             button1.Enabled = false;
             question_count++; //Увеличили число вопросов
 
-            if (question_count == 5)//Допилить
+            if (question_count == 6)//Допилить
                 button1.Text = "Завершить";
 
         }
@@ -158,10 +168,14 @@ namespace Тест_по_теории_вероятности
 
         }
 
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(selected_response == correct_answers_number)
+            if (selected_response == correct_answers_number)
             {
                 correct_answers++;
             }
@@ -170,13 +184,15 @@ namespace Тест_по_теории_вероятности
             {
                 wrong_answers++;
 
-                array[wrong_answers] = label1.Text;
+                array[wrong_answers] =  label1.Text;
 
             }
 
-            if (button1.Text == "Начать заново")
+            if (button1.Text == "Начать тест заново")
             {
                 button1.Text = "Следующий вопрос";
+
+                array = null;
 
                 radioButton1.Visible = true;
                 radioButton2.Visible = true;
@@ -186,7 +202,7 @@ namespace Тест_по_теории_вероятности
                 return;
             }
 
-            if(button1.Text == "Завершить")
+            if (button1.Text == "Завершить")
             {
                 Reader.Close();
 
@@ -201,17 +217,17 @@ namespace Тест_по_теории_вероятности
 
                 button1.Text = "Начать тест заново";
 
-                var Str = "error : \n\n";
+                var Str = "Ваши ошибки : \n";
 
                 for (int i = 1; i <= wrong_answers; i++)
                     Str += array[i] + "\n";
 
-                if(wrong_answers != 0)
+                if (wrong_answers != 0)
                 {
-                    MessageBox.Show(Str,"Тест завершен");
+                    MessageBox.Show(Str, "Тест завершен");
                 }
 
-               
+
             }
             if (button1.Text == "Следующий вопрос")
             {
@@ -229,6 +245,8 @@ namespace Тест_по_теории_вероятности
 
         private void Test_Load(object sender, EventArgs e)
         {
+            AddQuestions();//Добавили вопросы
+
             button1.Text = "Следующий вопрос";
             button2.Text = "Выйти";
 
@@ -241,9 +259,5 @@ namespace Тест_по_теории_вероятности
             Start();
         }
 
-        private void radioButton4_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }
