@@ -102,40 +102,20 @@ namespace Тест_по_теории_вероятности
         void Quest()
         {
             Random rnd = new Random();
-            if (question_count < 3)
-            {
-                int numb_ques = rnd.Next(0, question_count_rand_ev);
+            int numb_ques = rnd.Next(0, question_count_rand_ev);
 
-                label1.Text = random_events[numb_ques].Question;
+            label1.Text = random_events[numb_ques].Question;
 
-                //Варианты ответа
-                radioButton1.Text = random_events[numb_ques].Answers(0);
-                radioButton2.Text = random_events[numb_ques].Answers(1);
-                radioButton3.Text = random_events[numb_ques].Answers(2);
-                radioButton4.Text = random_events[numb_ques].Answers(3);
+            //Варианты ответа
+            radioButton1.Text = random_events[numb_ques].Answers(0);
+            radioButton2.Text = random_events[numb_ques].Answers(1);
+            radioButton3.Text = random_events[numb_ques].Answers(2);
+            radioButton4.Text = random_events[numb_ques].Answers(3);
 
-                correct_answers_number = random_events[numb_ques].CorrectAnswer; // Считали правильный ответ
+            correct_answers_number = random_events[numb_ques].CorrectAnswer; // Считали правильный ответ
 
-                random_events.RemoveAt(numb_ques);
-                question_count_rand_ev--;
-            }
-            else
-            {
-                int numb_ques = rnd.Next(0, question_count_rand_iv);
-
-                label1.Text = random_variables[numb_ques].Question;
-
-                //Варианты ответа
-                radioButton1.Text = random_variables[numb_ques].Answers(0);
-                radioButton2.Text = random_variables[numb_ques].Answers(1);
-                radioButton3.Text = random_variables[numb_ques].Answers(2);
-                radioButton4.Text = random_variables[numb_ques].Answers(3);
-
-                correct_answers_number = random_variables[numb_ques].CorrectAnswer; // Считали правильный ответ
-
-                random_variables.RemoveAt(numb_ques);//Удалили вопрос из списка, чтобы избежать повторения
-                question_count_rand_iv--;//Уменьшили количество вопросов по теме
-            }
+            random_events.RemoveAt(numb_ques);
+            question_count_rand_ev--;
             radioButton1.Checked = false;
             radioButton2.Checked = false;
             radioButton3.Checked = false;
@@ -144,7 +124,7 @@ namespace Тест_по_теории_вероятности
             button1.Enabled = false;
             question_count++; //Увеличили число вопросов
 
-            if (question_count == 6)//Допилить
+            if (question_count == 5)//Допилить
                 button1.Text = "Завершить";
 
         }
